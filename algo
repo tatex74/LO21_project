@@ -1,0 +1,105 @@
+«rule.c»
+
+«create_rule»
+
+Algorithme create_rule:
+Données: Aucune
+Résultat: Une règle vide
+Lexique:
+    rule: Règle créée
+
+1. rule ← Allouer mémoire pour une nouvelle règle.
+2. Initialiser prémisse à NULL.
+3. Initialiser conclusion à une chaîne vide.
+4. Retourner rule.
+
+
+«add_prop_in_tail»
+
+Algorithme add_prop_in_tail(rule, prop_string):
+Données: Une règle, une proposition à ajouter
+Résultat: La règle mise à jour
+Lexique:
+    rule: La règle à mettre à jour
+    new_prop: La nouvelle proposition à ajouter
+
+1. new_prop ← Allouer mémoire pour une nouvelle proposition.
+2. Initialiser proposition(new_prop, prop_string).
+3. Si prémisse est vide(rule),
+    3.1. Initialiser prémisse(rule, new_prop).
+4. Sinon,
+    4.1. Parcourir prémisse jusqu'à la fin et ajouter nouvelle proposition en queue(rule, new_prop).
+5. Retourner rule.
+
+
+«contain_prop»
+
+Algorithme contain_prop(rule, prop):
+Données: Une règle, une proposition à rechercher
+Résultat: Vrai si la proposition est dans la prémisse, Faux sinon
+Lexique:
+    rule: La règle à vérifier
+    prop: La proposition à rechercher
+
+1. Si prémisse est vide(rule),
+    1.1. Retourner Faux.
+2. Si proposition équivalente à première proposition(rule, prop),
+    2.1. Retourner Vrai.
+3. Sinon,
+    3.1. Répéter opération avec reste de la prémisse(rule, prop).
+
+
+
+
+
+«remove_prop»
+
+Algorithme remove_prop(rule, prop):
+Données: Une règle, une proposition à supprimer
+Résultat: La règle mise à jour
+Lexique:
+    rule: La règle à mettre à jour
+    prop: La proposition à supprimer
+
+1. Si prémisse est vide(rule),
+    1.1. Retourner rule.
+2. Si proposition équivalente à première proposition(rule, prop),
+    2.1. Mettre à jour prémisse pour pointer vers proposition suivante(rule).
+    2.2. Libérer mémoire de proposition supprimée(rule).
+3. Sinon,
+    3.1. Parcourir prémisse jusqu'à proposition précédant celle à supprimer(rule, prop).
+    3.2. Mettre à jour pointeurs pour sauter proposition à supprimer(rule).
+    3.3. Libérer mémoire de proposition supprimée si elle est trouvée(rule).
+
+
+«base.c»
+
+«create_base»
+
+Algorithme create_base:
+Données: Aucune
+Résultat: Une nouvelle base vide
+Lexique:
+    base: La base créée
+
+1. base ← Allouer mémoire pour une nouvelle base.
+2. Initialiser base à NULL.
+3. Retourner base.
+
+
+«add_rule_in_tail»
+
+Algorithme add_rule_in_tail(base, rule):
+Données: Une base, une règle à ajouter
+Résultat: La base mise à jour
+Lexique:
+    base: La base à mettre à jour
+    rule: La règle à ajouter
+
+1. Si base est NULL,
+    1.1. Initialiser base à rule.
+2. Sinon,
+    2.1. Parcourir base jusqu'à la fin et ajouter règle en queue(base, rule).
+3. Retourner base.
+
+
