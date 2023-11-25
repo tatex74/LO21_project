@@ -26,18 +26,18 @@ Base *add_rule_in_tail(Base *base, Rule *rule) {
     return base;
 }
 
-
+// Supprime une base, y compris toutes ses règles, de la mémoire
 void remove_base(Base *base) {
-    if (base != NULL) {
+    if (base != NULL) { // Vérifie si la base n'est pas NULL
         Rule *p = base;
         Rule *tmp;
         
         while (p != NULL) {
             tmp = p->next;
-            remove_rule(p);
+            remove_rule(p); // Supprime chaque règle dans la base
             p = tmp;
         }   
 
-        free(base);
+        free(base); // Libère la mémoire de la base elle-même
     }
 }
