@@ -12,13 +12,13 @@ typedef struct _Proposition {
 typedef struct _Rule {
     Proposition *premise;
     char conclusion[PROPOSISTION_BUFFER];
-    struct _Rule *next; 
+    struct _Rule *next;
 } Rule;
 
-Rule* create_rule();
-Rule* add_prop_in_tail(Rule *rule, char prop_string[]);
+Rule *create_rule();
+Rule *add_prop_in_tail(Rule *rule, char prop_string[]);
 int contain_prop(Rule rule, char prop[]);
-Rule* remove_prop(Rule *rule, char prop[]);
+Rule *remove_prop(Rule *rule, char prop[]);
 
 
 #endif
