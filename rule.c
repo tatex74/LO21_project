@@ -3,7 +3,7 @@
 #include <string.h>
 #include "rule.h"
 
-Rule* create_rule() {
+Rule *create_rule() {
     Rule *rule = (Rule*) malloc(sizeof(Rule));
     rule->premise = NULL;
     strcpy(rule->conclusion, "");
@@ -11,7 +11,7 @@ Rule* create_rule() {
 }
 
 
-Rule* add_prop_in_tail(Rule *rule, char prop_string[]) {
+Rule *add_prop_in_tail(Rule *rule, char prop_string[]) {
     if (strlen(prop_string) > PROPOSISTION_BUFFER) {
         fprintf(stderr, "Error : cannot add rule, a rule must be less than 100 caracter.");
         return rule;
@@ -50,7 +50,7 @@ int contain_prop(Rule rule, char prop[]) {
 }
 
 
-Rule* remove_prop(Rule *rule, char prop[]) {
+Rule *remove_prop(Rule *rule, char prop[]) {
     if (rule->premise == NULL) {
         return rule;
     }
@@ -77,3 +77,19 @@ Rule* remove_prop(Rule *rule, char prop[]) {
 }
 
 
+void remove_rule(Rule *rule) {
+    if (rule != NULL) {
+        if (rule->premise != NULL) {
+            Proposition *p = rule->premise;
+            Proposition *tmp;
+            while (p != NULL) {
+                tmp = p->next;
+                free(p);
+                p = tmp;
+            }
+        }
+
+        free(rule);
+    }
+    
+}

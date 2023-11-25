@@ -19,6 +19,7 @@ Rule *create_rule();
 Rule *add_prop_in_tail(Rule *rule, char prop_string[]);
 int contain_prop(Rule rule, char prop[]);
 Rule *remove_prop(Rule *rule, char prop[]);
+void remove_rule(Rule *rule);
 
 
 #endif

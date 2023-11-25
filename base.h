@@ -7,6 +7,7 @@ typedef Rule* Base;
 
 Base *create_base();
 Base *add_rule_in_tail(Base *base, Rule *rule);
+void remove_base(Base *base);
 
 
 #endif
