@@ -1,6 +1,36 @@
 #include "engine.h"
 
 
+Proposition *engine(Proposition *l_facts, Base *base) {
+    if (base != NULL && base->head != NULL && l_facts != NULL) {
+        Rule *p_rule;
+        Proposition *l_new_facts;
+        Proposition *p_fact;
+        
+        while (p_rule != NULL && l_facts != NULL) {
+            if (p_rule->premise == NULL) {
+                if (!list_contain_prop(l_new_facts, p_rule->conclusion)) {
+                    l_new_facts = add_prop_in_tail_of_list(l_new_facts, p_rule->conclusion);
+                }
+            }
+            if (contain_prop(*p_rule, p_fact->proposition)) {
+                p_rule = remove_prop_of_rule(p_rule, p_fact->proposition);
+                l_facts = remove_prop_of_list(l_facts, p_fact->proposition);
+                if (p_rule->premise == NULL) {
+                    l_new_facts = add_prop_in_tail_of_list(l_new_facts, p_rule->conclusion);
+                }
+            }
+            p_rule = p_rule->next;
+        }        
+
+        return l_new_facts;
+    }
+    else {
+        return NULL;
+    }
+}
+
+
 Base *new_read_base_file(char filename[]) {
     FILE *file = fopen(filename, "r");
 
@@ -87,7 +117,7 @@ Base *add_rule_in_tail_string(Base *base, char rule[]) {
             if (rule[i] == ';') { // fin d'une proposition
                 prop[j] = '\0';
                 j = 0;
-                add_prop_in_tail(new_rule, prop);
+                add_prop_in_tail_of_rule(new_rule, prop);
             }
             else {
                 prop[j] = rule[i];

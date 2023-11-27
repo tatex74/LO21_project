@@ -11,9 +11,17 @@ Rule *create_rule() {
     return rule;
 }
 
+Proposition *create_prop() {
+    Proposition *new_prop = (Proposition*) malloc(sizeof(Proposition));
+    new_prop->next = NULL;
+    strcpy(new_prop->proposition, "");
+
+    return new_prop;
+}
+
 
 // Ajoute une proposition à la prémisse d'une règle
-Rule *add_prop_in_tail(Rule *rule, char prop_string[]) {
+Rule *add_prop_in_tail_of_rule(Rule *rule, char prop_string[]) {
     if (strlen(prop_string) > PROPOSISTION_BUFFER) {
         fprintf(stderr, "Error : cannot add rule, a rule must be less than 100 caracter.");
         return rule;
@@ -42,6 +50,30 @@ Rule *add_prop_in_tail(Rule *rule, char prop_string[]) {
     return rule;
 }
 
+Proposition *add_prop_in_tail_of_list(Proposition *list, char prop_string[]) {
+    Proposition *new_prop = (Proposition*) malloc(sizeof(Proposition));
+    new_prop->next = NULL;
+    strcpy(new_prop->proposition, prop_string);
+
+    if (list == NULL) {
+        return new_prop;
+    }
+    else {
+        Proposition *p = list;
+
+        while (p->next != NULL) {
+            p = p->next;
+        }
+
+        p->next = (Proposition*) malloc(sizeof(Proposition));
+        p->next->proposition;
+
+        return list;
+    }
+}
+
+
+
 
 // Vérifie si une proposition est dans la prémisse d'une règle (récursivement)
 int contain_prop(Rule rule, char prop[]) {
@@ -58,8 +90,22 @@ int contain_prop(Rule rule, char prop[]) {
 }
 
 
+int list_contain_prop(Proposition *list, char prop[]) {
+    if (list == NULL) {
+        return 0;
+    }
+    else if (strcmp(list->proposition, prop)) {
+        return 1;
+    }
+    else {
+        list = list->next;
+        return list_contain_prop(list, prop);
+    }
+}
+
+
 // Supprime une proposition de la prémisse d'une règle
-Rule *remove_prop(Rule *rule, char prop[]) {
+Rule *remove_prop_of_rule(Rule *rule, char prop[]) {
     if (rule->premise == NULL) {
         return rule; // Si la prémisse est vide, rien à faire
     }
@@ -82,9 +128,37 @@ Rule *remove_prop(Rule *rule, char prop[]) {
                 p->next = tmp; // Supprime une proposition dans le milieu ou à la fin de la prémisse
             }
         }
+        return rule;
     }
 }
 
+
+Proposition *remove_prop_of_list(Proposition *list, char prop[]) {
+    if (list == NULL) {
+        return list; 
+    }
+    else {
+        if (strcmp(list->proposition, prop)) {
+            Proposition *tmp = list->next;
+            free(list);
+            list = tmp;
+        }
+        else {
+            Proposition *p = list;
+
+            while (p->next != NULL && strcmp(p->next->proposition, prop) != 1) {
+                p = p->next;
+            }
+            
+            if (p->next != NULL) {
+                Proposition *tmp = p->next->next;
+                free(p->next);
+                p->next = tmp; // Supprime une proposition dans le milieu ou à la fin de la prémisse
+            }
+        }
+        return list;
+    }
+}
 
 // Supprime une règle, y compris sa prémisse, de la mémoire
 void remove_rule(Rule *rule) {
@@ -101,5 +175,6 @@ void remove_rule(Rule *rule) {
 
         free(rule); // Libère la mémoire de la règle elle-même
     }
-    
 }
+
+

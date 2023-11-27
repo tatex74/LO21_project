@@ -18,10 +18,15 @@ typedef struct _Rule {
 } Rule;
 
 Rule *create_rule();
-Rule *add_prop_in_tail(Rule *rule, char prop_string[]);
+Rule *add_prop_in_tail_of_rule(Rule *rule, char prop_string[]);
 int contain_prop(Rule rule, char prop[]);
-Rule *remove_prop(Rule *rule, char prop[]);
+Rule *remove_prop_of_rule(Rule *rule, char prop[]);
 void remove_rule(Rule *rule);
+
+Proposition *create_prop();
+Proposition *add_prop_in_tail_of_list(Proposition *list, char prop_string[]);
+Proposition *remove_prop_of_list(Proposition *list, char prop[]);
+int list_contain_prop(Proposition *list, char prop[]);
 
 
 #endif
