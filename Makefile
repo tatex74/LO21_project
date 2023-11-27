@@ -1,17 +1,19 @@
-OBJ = main.o engine.o base.o rule.o
+CC = gcc
+CFLAGS = -Iinclude
 
-main : ${OBJ}
-	gcc -o $@ $^
+OBJ_DIR = obj
+SRC_DIR = src
 
-main.o : main.c engine.c base.c rule.c
-	gcc -c $<
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
-engine.o : engine.c
-	gcc -c $<
+TARGET = main
 
-base.o : base.c
-	gcc -c $<
+$(TARGET): $(OBJ_FILES) 
+	$(CC) $(CFLAGS) -o $@ $^
 
-rule.o : rule.c
-	gcc -c $<
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
+clean : 
+	rm $(OBJ_DIR)/* $(TARGET)
