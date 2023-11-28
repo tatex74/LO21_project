@@ -8,7 +8,10 @@
 #include "rule.h"
 #include "proposition.h"
 
-Base *new_read_base_file(char filename[]);
+
+Proposition *engine(Proposition *l_facts, Base *base);
+Base *read_base_file(char filename[]);
+Proposition *read_facts_file(char filename[]);
 int is_valid_string_rule(char rule[]);
 Base *add_rule_in_tail_string(Base *base, char rule[]);
 

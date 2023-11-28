@@ -16,5 +16,6 @@ Proposition *create_prop();
 Proposition *add_prop_in_tail_of_list(Proposition *list, char prop_string[]);
 Proposition *remove_prop_of_list(Proposition *list, char prop[]);
 int list_contain_prop(Proposition *list, char prop[]);
+void print_proposition_list(Proposition *l_prop);
 
 #endif

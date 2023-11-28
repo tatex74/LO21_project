@@ -19,13 +19,12 @@ Proposition *add_prop_in_tail_of_list(Proposition *list, char prop_string[]) {
     }
     else {
         Proposition *p = list;
-
+        
         while (p->next != NULL) {
             p = p->next;
         }
 
-        p->next = (Proposition*) malloc(sizeof(Proposition));
-        p->next->proposition;
+        p->next = new_prop;
 
         return list;
     }
@@ -72,5 +71,23 @@ Proposition *remove_prop_of_list(Proposition *list, char prop[]) {
             }
         }
         return list;
+    }
+}
+
+
+void print_proposition_list(Proposition *l_prop) {
+    if (l_prop != NULL) {
+        Proposition *p_prop = l_prop;
+
+        while (p_prop != NULL) {
+            printf("%s", p_prop->proposition);
+            if (p_prop->next != NULL) {
+                printf(", ");
+            }
+            p_prop = p_prop->next;
+        }
+
+        printf("\n");
+        
     }
 }
