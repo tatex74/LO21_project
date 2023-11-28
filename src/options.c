@@ -3,7 +3,7 @@
 void printHelp() {
     printf("Usage: program_name [OPTIONS]\n");
     printf("Options:\n");
-    printf("  -h      Print this help message\n");
+    printf("  --help      Print this help message\n");
     printf("  --base  file of the knowledge base\n");
     printf("  --facts  file of facts\n");
 }
@@ -34,6 +34,9 @@ Files_path *get_paths(int argc, char *argv[]) {
 			case 'f':
 				strcpy(paths->facts_file, optarg);
 				break;
+            default:
+                printf("Error with argument");
+                return NULL;
 		}
 	}
 

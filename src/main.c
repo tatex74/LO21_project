@@ -6,7 +6,10 @@
 
 int main(int argc, char *argv[]) {
 
-    Files_path *paths = get_paths(argc, argv);
+    Files_path *paths;
+    if ((paths = get_paths(argc, argv)) == NULL) {
+        return 1;
+    }
     
     Base *base = read_base_file(paths->base_file);
     Proposition *facts = read_facts_file(paths->facts_file);
