@@ -6,6 +6,7 @@
 #include <string.h>
 #include "base.h"
 #include "rule.h"
+#include "proposition.h"
 
 Base *new_read_base_file(char filename[]);
 int is_valid_string_rule(char rule[]);

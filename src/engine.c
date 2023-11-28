@@ -1,6 +1,5 @@
 #include "engine.h"
 
-
 Proposition *engine(Proposition *l_facts, Base *base) {
     if (base != NULL && base->head != NULL && l_facts != NULL) {
         Rule *p_rule;

@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "rule.h"
 #include "base.h"
 
 
