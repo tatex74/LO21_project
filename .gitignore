@@ -2,3 +2,6 @@ obj/*
 .vscode/
 base_file.txt
 main
+engine_new.c
+facts_file.txt
+test.c
