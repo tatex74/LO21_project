@@ -9,10 +9,10 @@ void printHelp() {
 }
 
 
-Files_path *get_paths(int argc, char *argv[]) {
+Files_path get_paths(int argc, char *argv[]) {
     int opt = 0;
 
-    Files_path *paths = (Files_path*) malloc(sizeof(Files_path));
+    Files_path paths;
 
 	struct option opts[] = {
 		{.name="help",.has_arg=0,.flag=0,.val='h'},
@@ -21,22 +21,24 @@ Files_path *get_paths(int argc, char *argv[]) {
 		{.name=0,.has_arg=0,.flag=0,.val=0},
 	};
 
-	while((opt = getopt_long(argc, argv, "", opts, NULL)) != -1) {
+	while((opt = getopt_long(argc, argv, "hb:f:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'h':
 				printHelp();
 				break;
 				
 			case 'b':
-                strcpy(paths->base_file, optarg);
+				paths.base_file = (char*) malloc(sizeof(char));
+                strcpy(paths.base_file, optarg);
 				break;
 				
 			case 'f':
-				strcpy(paths->facts_file, optarg);
+				paths.facts_file = (char*) malloc(sizeof(char));
+				strcpy(paths.facts_file, optarg);
 				break;
             default:
                 printf("Error with argument");
-                return NULL;
+                return paths;
 		}
 	}
 

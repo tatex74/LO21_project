@@ -7,15 +7,20 @@
 
 #define PROPOSISTION_BUFFER 100
 
-typedef struct _Proposition {
-    char proposition[PROPOSISTION_BUFFER];
-    struct _Proposition *next;    
-} Proposition;
+typedef char* Proposition;
 
-Proposition *create_prop();
-Proposition *add_prop_in_tail_of_list(Proposition *list, char prop_string[]);
-Proposition *remove_prop_of_list(Proposition *list, char prop[]);
-int list_contain_prop(Proposition *list, char prop[]);
-void print_proposition_list(Proposition *l_prop);
+typedef struct prop_elem {
+    Proposition prop;
+    struct prop_elem *next;
+} Prop_List_Element;
+
+typedef Prop_List_Element* Prop_List;
+
+
+Prop_List add_prop_in_tail_of_list(Prop_List list, Proposition prop);
+Prop_List remove_prop_of_list(Prop_List list, Proposition prop);
+int list_contain_prop(Prop_List list, Proposition prop);
+void print_proposition_list(Prop_List list);
+void free_prop_list(Prop_List list);
 
 #endif

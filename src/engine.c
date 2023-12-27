@@ -1,71 +1,67 @@
 #include "engine.h"
 
-Proposition *engine(Proposition *l_facts, Base *base) {
-    if (base != NULL && base->head != NULL && l_facts != NULL) {
-        Rule *p_rule = base->head;
-        Proposition *l_new_facts = NULL;
-        Proposition *p_fact = l_facts;
-
-        print_proposition_list(l_facts);
-        
-        while (p_fact != NULL) {
-            p_rule = base->head;
-            while (p_rule != NULL) {
-                if (p_rule->premise == NULL) {
-                    if (!list_contain_prop(l_new_facts, p_rule->conclusion)) {
-                        l_new_facts = add_prop_in_tail_of_list(l_new_facts, p_rule->conclusion);
-                        l_facts = add_prop_in_tail_of_list(l_facts, p_rule->conclusion);
-                    }
-                }
-                if (contain_prop(*p_rule, p_fact->proposition)) {
-                    p_rule = remove_prop_of_rule(p_rule, p_fact->proposition);
-                    l_facts = remove_prop_of_list(l_facts, p_fact->proposition);
-                    if (p_rule->premise == NULL) {
-                        l_new_facts = add_prop_in_tail_of_list(l_new_facts, p_rule->conclusion);
-                        l_facts = add_prop_in_tail_of_list(l_facts, p_rule->conclusion);
-                    }
-                }
-                p_rule = p_rule->next;
-            }      
-            p_fact = p_fact->next;
-        }
-
-        return l_new_facts;
-    }
-    else {
+Prop_List engine(Prop_List l_facts, Base base) {
+    if (base != NULL && l_facts == NULL) {
+        fprintf(stderr, "Error : base or l_facts NULL\n");
         return NULL;
     }
+
+    Rule_List_Element *p_rule_elem = base;
+    Prop_List l_new_facts = NULL;
+    Prop_List_Element *p_fact_elem = l_facts;
+    
+    while (p_fact_elem != NULL) {
+        p_rule_elem = base;
+        while (p_rule_elem != NULL) {
+            if (rule_contain_prop(p_rule_elem->rule, p_fact_elem->prop)) {
+                p_rule_elem->rule = remove_prop_of_rule(p_rule_elem->rule, p_fact_elem->prop);
+                if (p_rule_elem->rule.premise == NULL) {
+                    l_new_facts = add_prop_in_tail_of_list(l_new_facts, p_rule_elem->rule.conclusion);
+                    l_facts = add_prop_in_tail_of_list(l_facts, p_rule_elem->rule.conclusion);
+                }
+            }
+            p_rule_elem = p_rule_elem->next;
+        }      
+        p_fact_elem = p_fact_elem->next;
+    }
+
+    return l_new_facts;
+
 }
 
 
-Base *read_base_file(char filename[]) {
-    FILE *file = fopen(filename, "r");
+Base read_base_file(char filename[]) {
+    FILE *base_file = fopen(filename, "r");
 
-    if (file == NULL) {
+    if (base_file == NULL) {
         fprintf(stderr, "Enable to read base file\n");
         return NULL;
     }
 
-    Base *base = create_base();
+    Base base = NULL;
+    Rule rule = create_rule();
 
     char ligne[100];
     char c;
     int i = 0;
 
     do {
-        c = fgetc(file);
+        c = fgetc(base_file);
 
         if (c == '\n' || c == EOF) {
             if (i != 0) {
                 ligne[i] = '\0';
-                base = add_rule_in_tail_string(base, ligne);
+                rule = create_rule_from_string(ligne);
+                if (rule.premise != NULL && rule.conclusion != NULL) {
+                    base = add_rule_in_tail(base, rule);
+                }
                 i = 0;
             }
         }
         else if (c == ' ') {
             fprintf(stderr, "invalid rule in %s", filename);
             while (c != '\n' && c != EOF) {
-                c = fgetc(file);
+                c = fgetc(base_file);
             }
             i = 0;
         }
@@ -75,11 +71,13 @@ Base *read_base_file(char filename[]) {
         }
     } while (c != EOF);
 
+    fclose(base_file);
+
     return base;
 }
 
 
-Proposition *read_facts_file(char filename[]) {
+Prop_List read_facts_file(char filename[]) {
     FILE *file = fopen(filename, "r");
 
     if (file == NULL) {
@@ -87,7 +85,7 @@ Proposition *read_facts_file(char filename[]) {
         return NULL;
     }
 
-    Proposition *facts = NULL;
+    Prop_List facts = NULL;
 
     char fact[100];
     char c;
@@ -116,80 +114,9 @@ Proposition *read_facts_file(char filename[]) {
         }
     } while (c != EOF);
 
+    fclose(file);
+
+    return facts;
 }
 
 
-int is_valid_string_rule(char rule[]) {
-
-    if (rule == NULL) {
-        return 0;
-    }
-
-    if (rule[0] == ';' || rule[0] == '\0') {
-        return 0;
-    }
-
-    int i = 0;
-    int buffer = 0;
-
-    while (rule[i] != '\0' && buffer < PROPOSISTION_BUFFER-1) {
-        if (rule[i] == ';') {
-            if (rule[i+1] == ';') {
-                return 0;
-            }
-            buffer = 0;
-        }
-        else {
-            buffer++;
-        }
-        i++;
-    }
-
-    if (buffer >= PROPOSISTION_BUFFER-1) {
-        return 0;
-    }
-
-    if (rule[i-1] == ';') {
-        return 0;
-    }
-
-    return 1;
-}
-
-
-Base *add_rule_in_tail_string(Base *base, char rule[]) {
-    if (is_valid_string_rule(rule)) {
-        Rule *new_rule = create_rule();
-        if (new_rule == NULL) {
-            return base;
-        }
-
-        int i = 0;
-        int j = 0;
-        char prop[100];
-
-        while (rule[i] != '\0') {
-            if (rule[i] == ';') { // fin d'une proposition
-                prop[j] = '\0';
-                j = 0;
-                add_prop_in_tail_of_rule(new_rule, prop);
-            }
-            else {
-                prop[j] = rule[i];
-                j++;
-            }
-            i++;
-        } 
-
-        prop[j] = '\0';
-        strcpy(new_rule->conclusion, prop); // ajout de la derniere proposition en conclusion
-
-        base = add_rule_in_tail(base, new_rule);
-    }
-    else {
-        fprintf(stderr, "invalid rule");
-    }
-    
-
-    return base;
-}
