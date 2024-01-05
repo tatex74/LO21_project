@@ -159,7 +159,7 @@ Rule create_rule_from_string(char *string_rule) {
 }
 
 // verifie qu'un regle ecrite sous forme de chaine de cractere est valide
-// une regle est valide si elle appartient a la grammaire : ([a-z]^n;)^n[a-z]
+// une regle est valide si elle appartient a la grammaire : ([a-z][A-Z][0-9]^n;)^n[a-z][A-Z][0-9]^n
 int is_valid_string_rule(char rule[]) {
 
     if (rule == NULL) {
