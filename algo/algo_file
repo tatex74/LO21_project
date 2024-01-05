@@ -1,105 +1,829 @@
-«rule.c»
+ Profil : create_base
 
-«create_rule»
+- Données d'entrée : Aucune.
+- Résultat : Nouvelle base de connaissances vide (Base).
+- Lexique : Aucun
 
-Algorithme create_rule:
-Données: Aucune
-Résultat: Une règle vide
-Lexique:
-    rule: Règle créée
+Algo :
 
-1. rule ← Allouer mémoire pour une nouvelle règle.
-2. Initialiser prémisse à NULL.
-3. Initialiser conclusion à une chaîne vide.
-4. Retourner rule.
+Fonction create_base() : Base
+Début
+    create_base ← nouvel(Base)
+Fin
 
 
-«add_prop_in_tail»
+Profil : add_rule_in_tail
 
-Algorithme add_prop_in_tail(rule, prop_string):
-Données: Une règle, une proposition à ajouter
-Résultat: La règle mise à jour
-Lexique:
-    rule: La règle à mettre à jour
-    new_prop: La nouvelle proposition à ajouter
+- Données d'entrée :
+  - base : Base de Connaissances (Base) - la base de connaissances à laquelle la règle doit être ajoutée.
+  - rule : Règle (Rule) - la règle à ajouter à la base de connaissances.
+- Résultat :
+  - Base de Connaissances mise à jour (Base).
+- Lexique :
+  - new_elem : ElementListeRegle - un nouvel élément de la liste pour stocker la règle.
+  - p_elem : ElementListeRegle - un pointeur pour parcourir la liste des règles.
 
-1. new_prop ← Allouer mémoire pour une nouvelle proposition.
-2. Initialiser proposition(new_prop, prop_string).
-3. Si prémisse est vide(rule),
-    3.1. Initialiser prémisse(rule, new_prop).
-4. Sinon,
-    4.1. Parcourir prémisse jusqu'à la fin et ajouter nouvelle proposition en queue(rule, new_prop).
-5. Retourner rule.
+Algo :
 
+Fonction add_rule_in_tail(base : Base, rule : Rule) : Base
+Début
+    new_elem : Rule_List_Element ← nouvel(Rule_List_Element)
+    Si estVide(new_elem) alors
+        Afficher "Erreur d'allocation mémoire"
+        add_rule_in_tail ← base
+    Sinon
+        rule(new_elem) ← rule
+        suivant(new_elem) ← NULL
 
-«contain_prop»
-
-Algorithme contain_prop(rule, prop):
-Données: Une règle, une proposition à rechercher
-Résultat: Vrai si la proposition est dans la prémisse, Faux sinon
-Lexique:
-    rule: La règle à vérifier
-    prop: La proposition à rechercher
-
-1. Si prémisse est vide(rule),
-    1.1. Retourner Faux.
-2. Si proposition équivalente à première proposition(rule, prop),
-    2.1. Retourner Vrai.
-3. Sinon,
-    3.1. Répéter opération avec reste de la prémisse(rule, prop).
-
-
-
-
-
-«remove_prop»
-
-Algorithme remove_prop(rule, prop):
-Données: Une règle, une proposition à supprimer
-Résultat: La règle mise à jour
-Lexique:
-    rule: La règle à mettre à jour
-    prop: La proposition à supprimer
-
-1. Si prémisse est vide(rule),
-    1.1. Retourner rule.
-2. Si proposition équivalente à première proposition(rule, prop),
-    2.1. Mettre à jour prémisse pour pointer vers proposition suivante(rule).
-    2.2. Libérer mémoire de proposition supprimée(rule).
-3. Sinon,
-    3.1. Parcourir prémisse jusqu'à proposition précédant celle à supprimer(rule, prop).
-    3.2. Mettre à jour pointeurs pour sauter proposition à supprimer(rule).
-    3.3. Libérer mémoire de proposition supprimée si elle est trouvée(rule).
+        Si estVide(base) alors
+            base ← new_elem
+        Sinon
+            p_elem : Rule_List_Element ← base
+            TantQue Non estVide(suivant(p_elem))faire
+                p_elem ← suivant(p_elem)
+            Fait
+            suivant(p_elem) ← new_elem
+        FinSi
+        add_rule_in_tail ← base
+    FinSi
+Fin
 
 
-«base.c»
+ Profil : accessing_head_rule_of_base
 
-«create_base»
+- Données d'entrée :
+  - `base` : Base de Connaissances (Base).
+- Résultat : Première règle de la base de connaissances (Rule).
+- Lexique : Aucun.
 
-Algorithme create_base:
-Données: Aucune
-Résultat: Une nouvelle base vide
-Lexique:
-    base: La base créée
+Algo :
 
-1. base ← Allouer mémoire pour une nouvelle base.
-2. Initialiser base à NULL.
-3. Retourner base.
+Fonction accessing_head_rule_of_base(base : Base) : Rule
+Début
+    Si Non estVide(base) alors
+        accessing_head_rule_of_base ← rule(base)
+    Sinon
+        accessing_head_rule_of_base ← {NULL, NULL}
+    FinSi
+Fin
 
 
-«add_rule_in_tail»
+ Profil : free_base
 
-Algorithme add_rule_in_tail(base, rule):
-Données: Une base, une règle à ajouter
-Résultat: La base mise à jour
-Lexique:
-    base: La base à mettre à jour
-    rule: La règle à ajouter
+- Données d'entrée :
+  - `base` : Base de Connaissances (Base) à libérer.
+- Résultat : Aucun (procédure).
+- Lexique :
+  - `p` : Pointeur vers Rule_List_Element.
+  - `tmp` : Pointeur temporaire pour parcourir la liste.
 
-1. Si base est NULL,
-    1.1. Initialiser base à rule.
-2. Sinon,
-    2.1. Parcourir base jusqu'à la fin et ajouter règle en queue(base, rule).
-3. Retourner base.
+Algo : 
+
+Procédure free_base(base : Base)
+Début
+    p : Rule_List_Element ← base
+    TantQue Non estVide(p) faire
+        tmp : Rule_List_Element ← suivant(p)
+        free_rule_list_element(p)
+        p ← tmp
+    Fait
+Fin
+
+
+ Profil : print_base
+
+- Données d'entrée :
+  - `base` : Base de Connaissances (Base) à afficher.
+- Résultat : Aucun (procédure).
+- Lexique :
+ - `p` : Pointeur vers Rule_List_Element pour parcourir la base
+
+Algo :
+
+Procédure print_base(base : Base)
+Début
+    Si Non estVide(base) alors
+        p : Rule_List_Element ← base
+        TantQue Non estVide(p) faire
+            Si Non estVide(premise(rule(p))) alors
+                print_proposition_list(premise(rule(p)))
+            FinSi
+            p ← suivant(p)
+        Fait
+    FinSi
+    Afficher saut de ligne
+Fin
+
+
+ Profil : engine
+
+- Données d'entrée :
+  - `l_facts` : Liste de faits (Prop_List).
+  - `base` : Base de Connaissances (Base).
+- Résultat : Liste des nouveaux faits déduits (Prop_List).
+- Lexique :
+  - `p_rule_elem` : Pointeur vers Rule_List_Element.
+  - `l_new_facts` : Liste de nouveaux faits.
+  - `p_fact_elem` : Pointeur vers Prop_List_Element.
+
+Algo :
+
+Fonction engine(l_facts : Prop_List, base : Base) : Prop_List
+Début
+    Si Non estVide(base) et estVide(l_facts) alors
+        Afficher "Erreur : base ou l_facts NULL"
+        engine ← NULL
+    Sinon
+        p_rule_elem : Rule_List_Element ← base
+        l_new_facts : Prop_List ← NULL
+        p_fact_elem : Prop_List_Element ← l_facts
+
+        TantQue Non estVide(p_fact_elem) faire
+            p_rule_elem ← base
+            TantQue Non estVide(p_rule_elem)  faire
+                Si rule_contain_prop(rule(p_rule_elem), prop(p_fact_elem)) alors
+                    rule(p_rule_elem) ← remove_prop_of_rule(rule(p_rule_elem), prop(p_fact_elem))
+                    Si estVide(premise(rule(p_rule_elem))) alors
+                        l_new_facts ← add_prop_in_tail_of_list(l_new_facts, conclusion(rule(p_rule_elem)))
+                        l_facts ← add_prop_in_tail_of_list(l_facts, conclusion(rule(p_rule_elem)))
+                    FinSi
+                FinSi
+                p_rule_elem ← suivant(p_rule_elem)
+            Fait
+            p_fact_elem ← suivant(p_fact_elem)
+        Fait
+        engine ← l_new_facts
+    FinSi
+Fin
+
+ Profil : read_base_file
+
+- Données d'entrée :
+  - `filename` : Nom du fichier (chaîne de caractères).
+- Résultat : Base de Connaissances lue du fichier (Base).
+- Lexique :
+  - `base_file` : Fichier.
+  - `base` : Base de Connaissances.
+  - `rule` : Règle.
+  - `ligne`, `c`, `i` : Variables pour la lecture du fichier.
+
+Algo :
+
+Fonction read_base_file(filename : chaîne) : Base
+Début
+    base_file : FICHIER ← ouvrir(filename, "r")
+    Si estVide(base_file) alors
+        Afficher "Impossible de lire le fichier de base"
+        read_base_file ← NULL
+    Sinon
+        base : Base ← NULL
+        rule : Rule ← create_rule()
+        ligne : chaîne[100]
+        c : caractère
+        i : entier ← 0
+
+        Répéter
+            c ← lireCaractère(base_file)
+            Si c = '\n' ou c = EOF alors
+                Si i ≠ 0 alors
+                    ligne[i] ← '\0'
+                    rule ← create_rule_from_string(ligne)
+                    Si Non estVide(premise(rule)) et Non estVide(conclusion(rule)) alors
+                        base ← add_rule_in_tail(base, rule)
+                    FinSi
+                    i ← 0
+                FinSi
+            SinonSi c = ' ' alors
+                Afficher "règle invalide dans ", filename
+                Répéter
+                    c ← lireCaractère(base_file)
+                Jusqu'à c = '\n' ou c = EOF
+                i ← 0
+            Sinon
+                ligne[i] ← c
+                i ← i + 1
+            FinSi
+        Jusqu'à c = EOF
+
+        fermer(base_file)
+        read_base_file ← base
+    FinSi
+Fin
+
+
+
+
+ Profil : read_facts_file
+
+- Données d'entrée :
+  - `filename` : Nom du fichier (chaîne de caractères).
+- Résultat : Liste de faits lue du fichier (Prop_List).
+- Lexique :
+  - `file` : Fichier.
+  - `facts` : Liste de faits.
+  - `fact`, `c`, `i` : Variables pour la lecture du fichier.
+
+
+Algo :
+
+Fonction read_facts_file(filename : chaîne) : Prop_List
+Début
+    file : FICHIER ← ouvrir(filename, "r")
+    Si estVide(file) alors
+        Afficher "Impossible de lire les faits"
+        read_facts_file ← NULL
+    Sinon
+        facts : Prop_List ← NULL
+        fact : chaîne[100]
+        c : caractère
+        i : entier ← 0
+
+        Répéter
+            c ← lireCaractère(file)
+            Si c = '\n' ou c = EOF alors
+                Si i ≠ 0 alors
+                    fact[i] ← '\0'
+                    facts ← add_prop_in_tail_of_list(facts, fact)
+                    i ← 0
+                FinSi
+            SinonSi c = ';' ou c = ' ' alors
+                Afficher "fait invalide dans ", filename
+                Répéter
+                    c ← lireCaractère(file)
+                Jusqu'à c = '\n' ou c = EOF
+                i ← 0
+            Sinon
+                fact[i] ← c
+                i ← i + 1
+            FinSi
+        Jusqu'à c = EOF
+
+        fermer(file)
+        read_facts_file ← facts
+    FinSi
+Fin
+
+
+
+ Profil : main
+
+- Données d'entrée :
+  - `argc` : Nombre d'arguments (entier).
+  - `argv` : Arguments (tableau de chaînes).
+- Résultat : Valeur de retour du programme (entier).
+- Lexique :
+  - `paths` : Chemins des fichiers.
+  - `base` : Base de Connaissances.
+  - `facts` : Liste de faits.
+  - `new_facts` : Nouveaux faits déduits.
+
+Algo :
+
+Procédure main(argc : entier, argv : tableau de chaînes) : entier
+Début
+    paths : Files_path ← get_paths(argc, argv)
+    
+    base : Base ← read_base_file(base_file(paths))
+    facts : Prop_List ← read_facts_file(facts_file(paths))
+
+    new_facts : Prop_List ← engine(facts, base)
+    print_proposition_list(new_facts)
+
+    free_base(base)
+    free_prop_list(facts)
+    free_prop_list(new_facts)
+
+    main ← 0
+Fin
+
+
+
+ Profil : printHelp
+
+- Données d'entrée : Aucune.
+- Résultat : Aucun (procédure).
+- Lexique : Aucun.
+
+Algo :
+
+Procédure printHelp()
+Début
+    Afficher "Usage: program_name [OPTIONS]"
+    Afficher "Options:"
+    Afficher "  --help      Print this help message"
+    Afficher "  --base  file of the knowledge base"
+    Afficher "  --facts  file of facts"
+Fin
+
+
+ Profil : get_paths
+
+- Données d'entrée :
+  - `argc` : Nombre d'arguments (entier).
+  - `argv` : Arguments (tableau de chaînes).
+- Résultat : Chemins des fichiers spécifiés (Files_path).
+- Lexique :
+  - `opt` : Option actuelle.
+  - `paths` : Chemins des fichiers.
+
+Algo :
+
+Fonction get_paths(argc : entier, argv : tableau de chaînes) : Files_path
+Début
+    opt : entier ← 0
+    paths : Files_path
+
+    Répéter
+        opt ← getopt_long(argc, argv, "hb:f:", opts, NULL)
+        Selon opt faire
+            Cas 'h':
+                printHelp()
+            Cas 'b':
+                base_file(paths) ← nouveau char[strlen(optarg)+1]
+                Copier optarg dans base_file(paths)
+            Cas 'f':
+                facts_file(paths) ← nouveau char[strlen(optarg)+1]
+                Copier optarg dans facts_file(paths)
+            Défaut:
+                Afficher "Erreur avec l'argument"
+        FinSelon
+    Jusqu'à opt = -1
+
+    get_paths ← paths
+Fin
+
+
+ Profil : add_prop_in_tail_of_list
+
+- Données d'entrée :
+  - `list` : Liste de propositions (Prop_List).
+  - `prop` : Proposition à ajouter (Proposition).
+- Résultat : Liste de propositions mise à jour (Prop_List).
+- Lexique :
+  - `new_prop` : Nouvel élément de la liste.
+  - `p` : Pointeur pour parcourir la liste.
+
+Algo :
+
+Fonction add_prop_in_tail_of_list(list : Prop_List, prop : Proposition) : Prop_List
+Début
+    new_prop : Prop_List_Element ← nouvel(Prop_List_Element)
+    Si estVide(new_prop) alors
+        Afficher "Erreur : Prop_List_Element* allocation"
+        add_prop_in_tail_of_list ← list
+    Sinon
+        prop(new_prop) ← nouveau char[strlen(prop)+1]
+        Si estVide(prop(new_prop)) alors
+            Afficher "Erreur : Proposition allocation"
+            add_prop_in_tail_of_list ← list
+        Sinon
+            Copier prop dans prop(new_prop)
+            suivant(new_prop) ← NULL
+
+            Si estVide(list) alors
+                list ← new_prop
+            Sinon
+                p : Prop_List_Element ← list
+                TantQue Non estVide(suivant(p)) faire
+                    p ← suivant(p)
+                Fait
+                suivant(p) ← new_prop
+            FinSi
+            add_prop_in_tail_of_list ← list
+        FinSi
+    FinSi
+Fin
+
+
+ Profil : list_contain_prop
+
+- Données d'entrée :
+  - `list` : Liste de propositions (Prop_List).
+  - `prop` : Proposition à chercher (Proposition).
+- Résultat : Entier indiquant la présence de la proposition (1 pour vrai, 0 pour faux).
+- Lexique : Aucun.
+
+Algo :
+
+Fonction list_contain_prop(list : Prop_List, prop : Proposition) : entier
+Début
+    Si estVide(list) alors
+        list_contain_prop ← 0
+    SinonSi strcmp(prop(list), prop) = 0 alors
+        list_contain_prop ← 1
+    Sinon
+        list_contain_prop ← list_contain_prop((Prop_List){suivant(list)}, prop)
+    FinSi
+Fin
+
+
+
+ Profil : remove_prop_of_list
+
+- Données d'entrée :
+  - `list` : Liste de propositions (Prop_List).
+  - `prop` : Proposition à supprimer (Proposition).
+- Résultat : Liste de propositions mise à jour (Prop_List).
+- Lexique :
+  - `tmp` : Pointeur temporaire pour la manipulation de la liste.
+  - `p_elem` : Pointeur pour parcourir la liste.
+
+
+Algo :
+
+Fonction remove_prop_of_list(list : Prop_List, prop : Proposition) : Prop_List
+Début
+    Si estVide(list) alors
+        remove_prop_of_list ← list
+    Sinon
+        Si strcmp(prop(list), prop) = 0 alors
+            tmp : Prop_List_Element ← suivant(list)
+            free(prop(list))
+            free(list)
+            remove_prop_of_list ← tmp
+        Sinon
+            p_elem : Prop_List_Element ← list
+            TantQue Non estVide(suivant(p_elem))et strcmp(prop(suivant(p_elem)), prop) ≠ 0 faire
+                p_elem ← suivant(p_elem)
+            Fait
+            
+            Si Non estVide(suivant(p_elem)) alors
+                tmp ← suivant(suivant(p_elem))
+                free(prop(suivant(p_elem)))
+                free(suivant(p_elem))
+                suivant(p_elem) ← tmp
+            FinSi
+            remove_prop_of_list ← list
+        FinSi
+    FinSi
+Fin
+
+
+
+ Profil : Procédure free_prop_list
+
+- Données d'entrée :
+  - `list` : Liste de Propositions (Prop_List).
+- Résultat : Aucun (libération de la mémoire).
+- Lexique :
+  - `p`, `tmp` : Prop_List_Element - pointeurs pour la libération de la liste.
+
+Algo :
+
+Procédure free_prop_list(list : Prop_List)
+Début
+    p : Prop_List_Element ← list
+    TantQue Non estVide(p) faire
+        tmp : Prop_List_Element ← suivant(p)
+        free(prop(p))
+        free(p)
+        p ← tmp
+    Fait
+Fin
+
+
+ Profil : Procédure print_proposition_list
+
+- Données d'entrée :
+  - `list` : Liste de Propositions (Prop_List).
+- Résultat : Aucun (affichage de la liste).
+- Lexique :
+  - `p_prop` : Prop_List_Element - pointeur pour parcourir la liste.
+
+Algo :
+
+Procédure print_proposition_list(list : Prop_List)
+Début
+    Si Non estVide(list) alors
+        p_prop : Prop_List_Element ← list
+        TantQue Non estVide(p_pro) faire
+            Afficher prop(p_prop)
+            Si Non estVide(suivant(p_prop)) alors
+                Afficher ", "
+            FinSi
+            p_prop ← suivant(p_prop)
+        Fait
+    FinSi
+    Afficher saut de ligne
+Fin
+
+ Profil : create_rule
+
+- Données d'entrée : Aucune.
+- Résultat : Nouvelle règle vide (Rule).
+- Lexique :
+  - `new_rule` : Rule - règle à créer.
+
+Algo :
+
+Fonction create_rule() : Rule
+Début
+    new_rule : Rule
+    premise(new_rule) ← NULL
+    conclusion(new_rule) ← NULL
+    create_rule ← new_rule
+Fin
+
+
+ Profil : add_prop_in_tail_of_rule
+
+- Données d'entrée :
+  - `rule` : Règle (Rule).
+  - `prop` : Proposition.
+- Résultat : Règle mise à jour (Rule).
+- Lexique :
+  - `new_prop` : Prop_List_Element - nouvel élément pour la liste de prémisse.
+  - `p_elem` : Prop_List_Element - pointeur pour parcourir la prémisse.
+
+Algo :
+
+Fonction add_prop_in_tail_of_rule(rule : Rule, prop : Proposition) : Rule
+Début
+    new_prop : Prop_List_Element ← nouvel(Prop_List_Element)
+    Si estVide(new_prop) alors
+        Afficher "Erreur : Prop_List_Element* allocation"
+        add_prop_in_tail_of_rule ← rule
+        Retour
+    FinSi
+    prop(new_prop) ← nouvel char[strlen(prop)+1]
+    Si estVide(prop(new_prop)) alors
+        Afficher "Erreur : Proposition allocation"
+        add_prop_in_tail_of_rule ← rule
+        Retour
+    FinSi
+    Copier prop dans prop(new_prop)
+    suivant(new_prop) ← NULL
+
+    Si estVide(premise(rule)) alors
+        premise(rule) ← new_prop
+    Sinon
+        p_elem : Prop_List_Element ← premise(rule)
+        TantQue Non estVide(suivant(p_elem)) faire
+            p_elem ← suivant(p_elem)
+        Fait
+        suivant(p_elem) ← new_prop
+    FinSi
+    add_prop_in_tail_of_rule ← rule
+Fin
+
+ Profil :  create_rule_conclusion
+
+- Données d'entrée :
+  - `rule` : Règle (Rule).
+  - `conclusion` : Proposition.
+- Résultat : Règle mise à jour (Rule).
+- Lexique : Aucun.
+
+Algo :
+
+Fonction create_rule_conclusion(rule : Rule, conclusion : Proposition) : Rule
+Début
+    Si Non estVide(conclusion(rule)) alors
+        Afficher "Erreur : Conclusion déjà définie"
+        create_rule_conclusion ← rule
+        Retour
+    FinSi
+    conclusion(rule) ← nouvel char[strlen(conclusion)+1]
+    Si estVide(conclusion(rule)) alors
+        Afficher "Erreur : Proposition allocation"
+        create_rule_conclusion ← rule
+        Retour
+    FinSi
+    Copier conclusion dans conclusion(rule)
+    create_rule_conclusion ← rule
+Fin
+
+
+ Profil : rule_contain_prop
+
+- Données d'entrée :
+  - `rule` : Règle (Rule).
+  - `prop` : Proposition.
+- Résultat : Entier (1 si la proposition est dans la prémisse, sinon 0).
+- Lexique : Aucun.
+
+Algo :
+
+Fonction rule_contain_prop(rule : Rule, prop : Proposition) : entier
+Début
+    Si estVide(premise(rule)) alors
+        rule_contain_prop ← 0
+        Retour
+    FinSi
+    Si strcmp(prop(premise(rule)), prop) = 0 alors
+        rule_contain_prop ← 1
+        Retour
+    FinSi
+    rule_contain_prop ← rule_contain_prop({suivant(premise(rule)), conclusion(rule)}, prop)
+Fin
+
+
+
+ Profil : remove_prop_of_rule
+
+- Données d'entrée :
+  - `rule` : Règle (Rule).
+  - `prop` : Proposition.
+- Résultat : Règle mise à jour (Rule).
+- Lexique :
+  - `tmp`, `p_elem` : Prop_List_Element - pointeurs pour la manipulation de la prémisse.
+
+Algo :
+
+Fonction remove_prop_of_rule(rule : Rule, prop : Proposition) : Rule
+Début
+    Si estVide(premise(rule)) alors
+        remove_prop_of_rule ← rule
+        Retour
+    FinSi
+    Si strcmp(prop(premise(rule)), prop) = 0 alors
+        tmp : Prop_List_Element ← suivant(premise(rule))
+        free(prop(premise(rule)))
+        free(premise(rule))
+        premise(rule) ← tmp
+        remove_prop_of_rule ← rule
+        Retour
+    FinSi
+    p_elem : Prop_List_Element ← premise(rule)
+    TantQue Non estVide(suivant(p_elem))et strcmp(prop(suivant(p_elem)), prop) ≠ 0 faire
+        p_elem ← suivant(p_elem)
+    Fait
+    Si Non estVide(suivant(p_elem))alors
+        tmp ← suivant(suivant(p_elem))
+        free(prop(suivant(p_elem)))
+        free(suivant(p_elem))
+        suivant(p_elem) ← tmp
+    FinSi
+    remove_prop_of_rule ← rule
+Fin
+
+
+ Profil : is_empty_premise
+
+- Données d'entrée :
+  - `rule` : Règle (Rule).
+- Résultat : Entier (1 si la prémisse est vide, sinon 0).
+- Lexique : Aucun.
+
+Algo :
+
+Fonction is_empty_premise(rule : Rule) : entier
+Début
+    Si estVide(premise(rule)) alors
+        is_empty_premise ← 1
+    Sinon
+        is_empty_premise ← 0
+    FinSi
+Fin
+
+ Profil : accessing_head_proposition_of_rule
+
+- Données d'entrée :
+  - `rule` : Règle (Rule).
+- Résultat : Proposition en tête de la prémisse (Proposition).
+- Lexique : Aucun.
+
+Algo :
+
+Fonction accessing_head_proposition_of_rule(rule : Rule) : Proposition
+Début
+    Si Non estVide(premise(rule)) alors
+        accessing_head_proposition_of_rule ← prop(premise(rule))
+    Sinon
+        accessing_head_proposition_of_rule ← NULL
+    FinSi
+Fin
+
+ Profil : accessing_conclusion_of_rule
+
+- Données d'entrée :
+  - `rule` : Règle (Rule).
+- Résultat : Conclusion de la règle (Proposition).
+- Lexique : Aucun.
+
+Algo :
+
+Fonction accessing_conclusion_of_rule(rule : Rule) : Proposition
+Début
+    accessing_conclusion_of_rule ← conclusion(rule)
+Fin
+
+
+ Profil : create_rule_from_string
+
+- Données d'entrée :
+  - `string_rule` : Chaîne de caractères (char*).
+- Résultat : Règle créée à partir de la chaîne (Rule).
+- Lexique :
+  - `new_rule` : Rule - règle à construire.
+  - `prop` : Chaîne de caractères - proposition temporaire.
+  - `i`, `j` : Entiers - indices pour la manipulation de la chaîne.
+
+
+Algo :
+
+Fonction create_rule_from_string(string_rule : chaîne) : Rule
+Début
+    new_rule : Rule ← create_rule()
+
+    Si non is_valid_string_rule(string_rule) alors
+        create_rule_from_string ← new_rule
+        Retour
+    FinSi
+
+    i : entier ← 0
+    j : entier ← 0
+    prop : chaîne[PROPOSISTION_BUFFER]
+
+    TantQue string_rule[i] ≠ '\0' faire
+        Si string_rule[i] = ';' alors
+            prop[j] ← '\0'
+            j ← 0
+            new_rule ← add_prop_in_tail_of_rule(new_rule, prop)
+        Sinon
+            prop[j] ← string_rule[i]
+            j ← j + 1
+        FinSi
+        i ← i + 1
+    Fait
+
+    prop[j] ← '\0'
+    new_rule ← create_rule_conclusion(new_rule, prop)
+    create_rule_from_string ← new_rule
+Fin
+
+
+ Profil : is_valid_string_rule
+
+- Données d'entrée :
+  - `rule` : Chaîne de caractères (char*).
+- Résultat : Entier (1 si la chaîne est une règle valide, sinon 0).
+- Lexique :
+  - `i`, `buffer` : Entiers - variables pour la vérification.
+
+
+Algo :
+
+Fonction is_valid_string_rule(rule : chaîne) : entier
+Début
+    Si estVide(rule) ou strlen(rule) = 0 ou rule[0] = ';' alors
+        is_valid_string_rule ← 0
+        Retour
+    FinSi
+
+    i : entier ← 0
+    buffer : entier ← 0
+
+    TantQue rule[i] ≠ '\0' et buffer < PROPOSISTION_BUFFER-1 faire
+        Si rule[i] = ';' alors
+            Si rule[i+1] = ';' alors
+                is_valid_string_rule ← 0
+                Retour
+            FinSi
+            buffer ← 0
+        SinonSi non isalpha(rule[i]) et non isalnum(rule[i]) alors
+            is_valid_string_rule ← 0
+            Retour
+        Sinon
+            buffer ← buffer + 1
+        FinSi
+        i ← i + 1
+    Fait
+
+    Si buffer ≥ PROPOSISTION_BUFFER-1 ou rule[i-1] = ';' alors
+        is_valid_string_rule ← 0
+    Sinon
+        is_valid_string_rule ← 1
+    FinSi
+Fin
+
+ Profil : free_rule_list_element
+
+- Données d'entrée :
+  - `rule_elem` : Élément de liste de règles (Rule_List_Element*).
+- Résultat : Aucun (libération de la mémoire).
+- Lexique :
+  - `p`, `tmp` : Prop_List_Element - pointeurs pour la libération de la prémisse.
+
+
+Algo :
+
+Procédure free_rule_list_element(rule_elem : Rule_List_Element)
+Début
+    Si Non estVide(rule_elem) alors
+        Si Non estVide(premise(rule(rule_elem))) alors
+            p : Prop_List_Element ← premise(rule(rule_elem))
+            TantQue Non estVide(p) faire
+                tmp : Prop_List_Element ← suivant(p)
+                free(prop(p))
+                free(p)
+                p ← tmp
+            Fait
+        FinSi
+        free(rule_elem)
+    FinSi
+Fin
+
+
 
 
