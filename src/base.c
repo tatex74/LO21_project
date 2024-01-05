@@ -2,8 +2,9 @@
 
 
 // Crée une nouvelle base vide
-Base *create_base() {
-    return (Base*) malloc(sizeof(Base));
+Base create_base() {
+    Base new_base = NULL;
+    return new_base;
 } 
 
 
@@ -35,12 +36,12 @@ Base add_rule_in_tail(Base base, Rule rule) {
     return base;
 }
 
-Rule accessing_head_rule_of_base(Base base) {
+Rule_List_Element* head_rule(Base base) {
     if (base != NULL) {
-        return base->rule;
+        return base;
     }
     else {
-        return (Rule){NULL, NULL};
+        return NULL;
     }
 }
 

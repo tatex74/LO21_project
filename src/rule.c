@@ -114,16 +114,16 @@ int is_empty_premise(Rule rule) {
 }
 
 
-Proposition accessing_head_proposition_of_rule(Rule rule) {
+Prop_List_Element* head_of_premise(Rule rule) {
     if (rule.premise != NULL) {
-        return rule.premise->prop;
+        return rule.premise;
     }
     else {
         return NULL;
     }
 }
 
-Proposition accessing_conclusion_of_rule(Rule rule) {
+Proposition conclusion(Rule rule) {
     return rule.conclusion;
 }
 

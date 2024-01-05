@@ -26,8 +26,9 @@ Rule create_rule_conclusion(Rule rule, Proposition conclusion);
 int rule_contain_prop(Rule rule, Proposition prop);
 Rule remove_prop_of_rule(Rule rule, Proposition prop);
 int is_empty_premise(Rule rule);
-Proposition accessing_head_proposition_of_rule(Rule rule);
-Proposition accessing_conclusion_of_rule(Rule rule);
+Prop_List_Element* head_of_premise(Rule rule);
+Proposition conclusion(Rule rule);
+
 int is_valid_string_rule(char rule[]);
 Rule create_rule_from_string(char *string_rule);
 

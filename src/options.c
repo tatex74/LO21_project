@@ -1,11 +1,10 @@
 #include "options.h"
 
 void printHelp() {
-    printf("Usage: program_name [OPTIONS]\n");
     printf("Options:\n");
-    printf("  --help      Print this help message\n");
-    printf("  --base  file of the knowledge base\n");
-    printf("  --facts  file of facts\n");
+    printf("  --help  or -h  Print this help message\n");
+    printf("  --base  or -b  File of the knowledge base\n");
+    printf("  --facts or -f  File of facts\n");
 }
 
 
@@ -25,6 +24,7 @@ Files_path get_paths(int argc, char *argv[]) {
 		switch (opt) {
 			case 'h':
 				printHelp();
+				return (Files_path){NULL, NULL};
 				break;
 				
 			case 'b':

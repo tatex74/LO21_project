@@ -6,18 +6,20 @@ Prop_List engine(Prop_List l_facts, Base base) {
         return NULL;
     }
 
-    Rule_List_Element *p_rule_elem = base;
+    Rule_List_Element *p_rule_elem = head_rule(base);
     Prop_List l_new_facts = NULL;
     Prop_List_Element *p_fact_elem = l_facts;
     
     while (p_fact_elem != NULL) {
-        p_rule_elem = base;
+        p_rule_elem = head_rule(base);
         while (p_rule_elem != NULL) {
             if (rule_contain_prop(p_rule_elem->rule, p_fact_elem->prop)) {
                 p_rule_elem->rule = remove_prop_of_rule(p_rule_elem->rule, p_fact_elem->prop);
-                if (p_rule_elem->rule.premise == NULL) {
-                    l_new_facts = add_prop_in_tail_of_list(l_new_facts, p_rule_elem->rule.conclusion);
-                    l_facts = add_prop_in_tail_of_list(l_facts, p_rule_elem->rule.conclusion);
+                if (head_of_premise(p_rule_elem->rule) == NULL) {
+                    if (list_contain_prop(l_facts, conclusion(p_rule_elem->rule)) == 0) {
+                        l_facts = add_prop_in_tail_of_list(l_facts, conclusion(p_rule_elem->rule));
+                        l_new_facts = add_prop_in_tail_of_list(l_new_facts, conclusion(p_rule_elem->rule));
+                    }
                 }
             }
             p_rule_elem = p_rule_elem->next;
@@ -38,10 +40,10 @@ Base read_base_file(char filename[]) {
         return NULL;
     }
 
-    Base base = NULL;
+    Base base = create_base();
     Rule rule = create_rule();
 
-    char ligne[100];
+    char ligne[LIGNE_MAX_SIZE];
     char c;
     int i = 0;
 
@@ -52,8 +54,11 @@ Base read_base_file(char filename[]) {
             if (i != 0) {
                 ligne[i] = '\0';
                 rule = create_rule_from_string(ligne);
-                if (rule.premise != NULL && rule.conclusion != NULL) {
+                if (head_of_premise(rule) != NULL && conclusion(rule) != NULL) {
                     base = add_rule_in_tail(base, rule);
+                }
+                else {
+                    fprintf(stderr, "Error : Invalid rule in %s\n", filename);
                 }
                 i = 0;
             }
@@ -101,8 +106,8 @@ Prop_List read_facts_file(char filename[]) {
                 i = 0;
             }
         }
-        else if (c == ';' || c == ' ') {
-            fprintf(stderr, "invalid fact in %s", filename);
+        else if (!isalpha(c) && !isalnum(c)) {
+            fprintf(stderr, "invalid fact in %s\n", filename);
             while (c != '\n' && c != EOF) {
                 c = fgetc(file);
             }
